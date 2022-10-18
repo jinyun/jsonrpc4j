@@ -17,6 +17,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -55,7 +56,8 @@ public class AutoJsonRpcClientProxyCreator implements BeanFactoryPostProcessor, 
 					String jsonRpcPathAnnotation = JsonRpcService.class.getName();
 					if (annotationMetadata.isAnnotated(jsonRpcPathAnnotation)) {
 						String className = classMetadata.getClassName();
-						String path = (String) annotationMetadata.getAnnotationAttributes(jsonRpcPathAnnotation).get("value");
+						String annoRpcPath = (String) annotationMetadata.getAnnotationAttributes(jsonRpcPathAnnotation).get("value");
+						String path = StringUtils.isEmpty(annoRpcPath)?className:annoRpcPath;
 						path = this.environment.resolvePlaceholders(path);
 						logger.debug("Found JSON-RPC service to proxy [{}] on path '{}'.", className, path);
 						registerJsonProxyBean(defaultListableBeanFactory, className, path);
